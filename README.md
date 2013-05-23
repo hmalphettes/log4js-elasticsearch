@@ -50,10 +50,11 @@ Usage: log4js configuration
         }
     });
 
-Usage: advanced
----------------
+Usage: custom
+-------------
 
     var log4js = require('log4js');
+    var uuid = require('node-uuid');
     log4js.configure({
         "appenders": [
             "appender": {
@@ -65,7 +66,12 @@ Usage: advanced
                     return loggingEvent.level.levelStr;
                 },
                 "url": "http://127.0.0.1:9200",
-                "layout": { 
+                "logId": function(loggingEvent) {
+                    return uuid.v4();
+                },
+                "buffersize": 1024,
+                "timeout": 45000,
+                "layout": {
                     "type": "logstash",
                     "tags": [ "mytag" ],
                     "sourceHost": function(loggingEvent) {
@@ -106,6 +112,9 @@ Default: 256
 
 - `timeout`: number of milliseconds to wait until the logs buffer is posted to elasticsearch; regardless of its size.
 Default: 30 seconds.
+
+- `logId`: function that returns the value of the `_id` of the logging event.
+Default: undefined to let elasticsearch generate it.
 
 Additional Built-in layouts
 ============================
