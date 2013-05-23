@@ -98,14 +98,14 @@ Defaults: 'logstash-'.
 Either a string or a function that is passed the logging event.
 Default: 'nodejs'.
 
-- `wrapper`: function that wraps the serialization of a logging event into the data stored in Elasticsearch.
-A function that is passed the output of the layout and returns what gets posted into elasticsearch.
-When the value is the string 'logstash' it uses the built-in logstash wrapper.
-When the value is 'simple' or 'passthrough' it passes along the output of the layout.
-Default: the built-in logstashWrapper.
-
 - `layout`: object descriptor for the layout.
 By default the layout is logstash.
+
+- `buffersize`: number of logs events to buffer before posted in bulks to elasticsearch
+Default: 256
+
+- `timeout`: number of milliseconds to wait until the logs buffer is posted to elasticsearch; regardless of its size.
+Default: 30 seconds.
 
 Additional Built-in layouts
 ============================

@@ -14,6 +14,7 @@ describe('When configuring a logger posting events to elasticsearch', function()
   before(function(done) {
     var config = {
       typeName: 'log4js',
+      buffersize: 1,
       layout: {
         type: 'logstash'
       }
@@ -64,13 +65,14 @@ describe('When configuring an es logger', function() {
   it('Must log where expected', function(done) {
     log4js.getLogger('tests').warn('and one for ES and the console');
     log4js.getLogger('tests').debug('and one for the console alone');
+    log4jsElasticSearch.flushAll(true);
     setTimeout(done, 700);
   });
 });
 
-// if someone knows how to setup the sandbox to make it load right
-// it would be nice!
 describe.skip('When configuring a filtered es logger', function() {
+  // if someone knows how to setup the sandbox to make it load right
+  // it would be nicer!
   var log4js = sandbox.require('log4js', {
     requires: {
       'log4js-elasticsearch': log4jsElasticSearch
@@ -80,7 +82,7 @@ describe.skip('When configuring a filtered es logger', function() {
     var config = {
       "appenders": [
         {
-          "category": "tests", 
+          "category": "tests2", 
           "type": "logLevelFilter",
           "level": "WARN",
           "appender": {
@@ -91,7 +93,7 @@ describe.skip('When configuring a filtered es logger', function() {
           }
         },
         { 
-          "category": "tests", 
+          "category": "tests2", 
           "type": "console",
           "layout": { 
             "type": "messagePassThrough" 
@@ -107,8 +109,9 @@ describe.skip('When configuring a filtered es logger', function() {
     setTimeout(done, 1000);
   });
   it('Must log where expected', function(done) {
-    log4js.getLogger('tests').warn('and one for ES and the console');
-    log4js.getLogger('tests').debug('and one for the console alone');
+    log4js.getLogger('tests2').warn('and one for ES and the console');
+    log4js.getLogger('tests2').debug('and one for the console alone');
+    log4jsElasticSearch.flushAll(true);
     setTimeout(done, 700);
   });
 });

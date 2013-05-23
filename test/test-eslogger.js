@@ -20,7 +20,6 @@ describe('When configuring a logger posting events to elasticsearch', function()
         currentMsg = null;
       } else {
         expect(logObj['@message']).to.exist;
-        console.log('hereis the message', logObj['@message']);
       }
       if (currentErrorMsg) {
         expect(currentErrorMsg).to.equal(logObj['@fields'].error);
@@ -62,7 +61,7 @@ describe('When configuring a logger posting events to elasticsearch', function()
   var currentLevelStr;
   var defineTemplateWasCalled = false;
   before(function(done) {
-    var config = { esclient: mockElasticsearchClient };
+    var config = { esclient: mockElasticsearchClient, buffersize: 1 };
     log4js.clearAppenders();
     log4js.addAppender(log4jsElasticSearch.configure(config, null, done), 'unittest');
   });
@@ -119,7 +118,7 @@ describe('When configuring an elasticsearch appender', function() {
     }, defineTemplate: function() {
       defineTemplateWasCalled = true;
       return { exec: function(cb) {
-        cb(null, '{}');
+        cb(null, 'ok');
       }};
     }, getTemplate: function(templateName) {
       return { exec: function(cb) {
@@ -133,6 +132,7 @@ describe('When configuring an elasticsearch appender', function() {
         {
           "type": "log4js-elasticsearch",
           "esclient": mockElasticsearchClient,
+          "buffersize": 1,
           "layout": { type: 'logstash' }
         }
       ]
@@ -167,7 +167,7 @@ describe('When configuring an elasticsearch logstash appender layout', function(
     }, defineTemplate: function() {
       defineTemplateWasCalled = true;
       return { exec: function(cb) {
-        cb(null, '{}');
+        cb(null, 'something');
       }};
     }, getTemplate: function(templateName) {
       return { exec: function(cb) {
@@ -182,6 +182,7 @@ describe('When configuring an elasticsearch logstash appender layout', function(
           "type": "log4js-elasticsearch",
           "esclient": mockElasticsearchClient,
           "typeName": "customType",
+          "buffersize": 1,
           "layout": {
             "type": "logstash",
             "tags": [ "goodie" ],
@@ -204,6 +205,7 @@ describe('When configuring an elasticsearch logstash appender layout', function(
         {
           "type": "log4js-elasticsearch",
           "esclient": mockElasticsearchClient,
+          "buffersize": 1,
           "typeName": function(loggingEvent) {
             return 'customType';
           },
@@ -228,5 +230,73 @@ describe('When configuring an elasticsearch logstash appender layout', function(
   });
 });
 
+describe('When sending the logs in bulk', function() {
+  var  log4js = sandbox.require('log4js', {
+    requires: {
+      'log4js-elasticsearch': log4jsElasticSearch
+    }
+  });
 
+  var currentMsg;
+  var bulkWasCalled = 0;
+  var expectedBulkcmdsSize;
+  var mockElasticsearchClient = {
+    bulk: function(bulkCmds) {
+      if (expectedBulkcmdsSize) {
+        expect(bulkCmds.length).to.equal(expectedBulkcmdsSize);
+        expectedBulkcmdsSize = null;
+      }
+      bulkWasCalled++;
+      return { exec: function() {
+      }};
+    }, getTemplate: function(templateName) {
+      return { exec: function(cb) {
+        cb(null, 'notempty');
+      }};
+    }
+  };
+  function reset(done) {
+    log4jsElasticSearch.flushAll(true);
+    bulkWasCalled = 0;
+    done();
+  }
+  afterEach(reset);
+  beforeEach(reset);
+  it('Must send logs in bulks when the bufferSize is reached', function(done) {
+    log4js.configure({
+      "appenders": [
+        {
+          "type": "log4js-elasticsearch",
+          "esclient": mockElasticsearchClient,
+          "buffersize": 2
+        }
+      ]
+    });
+    expectedBulkcmdsSize = 4;
+    log4js.getLogger('unittest').info('hello');
+    expect(bulkWasCalled).to.equal(0);
+    log4js.getLogger('unittest').info('goodbye');
+    expect(bulkWasCalled).to.equal(1);
+    done();
+  });
+  it('Must send logs in bulks after a timeout', function(done) {
+    log4js.configure({
+      "appenders": [
+        {
+          "type": "log4js-elasticsearch",
+          "esclient": mockElasticsearchClient,
+          "buffersize": 2,
+          "timeout": 20
+        }
+      ]
+    });
+    expectedBulkcmdsSize = 2;
+    log4js.getLogger('unittest').info('hello');
+    expect(bulkWasCalled).to.equal(0);
+    setTimeout(function() {
+      expect(bulkWasCalled).to.equal(1);
+      done();
+    }, 80);
+  });
+});
 
