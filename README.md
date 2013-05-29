@@ -27,7 +27,7 @@ The default url of the ES server is http://localhost:9200
 
 Usage: log4js configuration
 ---------------------------
-
+```javascript
     var log4js = require('log4js');
     log4js.configure({
         "appenders": [
@@ -42,13 +42,35 @@ Usage: log4js configuration
             },
             { 
                 "category": "tests", 
-                "type": "console",
+                "type": "console"
             }
         ],
         "levels": {
             "tests":  "DEBUG"
         }
     });
+
+    var log = log4js.getLogger('tests');
+    
+    log.error('hello hello');
+
+    if (setTimeout(function() {}).unref === undefined) {
+        console.log('force flushing and goodbye for node <= 0.8');
+        require('log4js-elasticsearch').flushAll(true);
+    }
+```
+
+Note: related to clearing the interval
+--------------------------------------
+Sending the logs by batches on a regular basis is a lot more performant
+than one by one.
+
+However a node process will not exit until all its has no more refernced timers.
+Since node-0.9 it is possible to have a 'soft' timer that is not referened.
+Before that it is required to close the log4js elasticsearch appenders:
+```javascript
+require('log4js-elasticsearch').flushAll(true);
+```
 
 Usage: custom
 -------------

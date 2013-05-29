@@ -22,9 +22,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "log4js": "*"
   },
   "devDependencies": {
+    "log4js": "*",
     "chai": "*",
     "mocha": "*",
     "istanbul": "*",
