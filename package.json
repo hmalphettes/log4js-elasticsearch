@@ -1,8 +1,7 @@
 {
   "name": "log4js-elasticsearch",
   "version": "0.0.1",
-  "description": "log4js appender for node that targets elasticsearch.\n
-Compatible with logstash's elasticsearch_http output; Viewable with Kibana.",
+  "description": "log4js appender for node that targets elasticsearch.\nCompatible with logstash's elasticsearch_http output; Viewable with Kibana.",
   "main": "lib/log4js-elasticsearch.js",
   "scripts": {
     "test": "make test"
@@ -19,7 +18,7 @@ Compatible with logstash's elasticsearch_http output; Viewable with Kibana.",
   ],
   "author": {
     "name": "Hugues Malphettes",
-    "email": "hugues@sutoiku.com"
+    "email": "hmalphettes@gmail.com"
   },
   "license": "MIT",
   "dependencies": {

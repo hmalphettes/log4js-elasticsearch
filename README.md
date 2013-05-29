@@ -2,7 +2,7 @@ log4js-elasticsearch
 ====================
 
 log4js-elasticsearch is a log4js log appender to push log messages into [elasticsearch](http://elasticsearch.org).
-[Kibana](http://kibana.org) is the awesome tool to view the logs.
+[Kibana](http://three.kibana.org) is the awesome tool to view the logs.
 
 The logs produced are compatible with [logstash's elasticsearch_http output](logstash.net/docs/1.1.12/outputs/elasticsearch_http).
 
@@ -156,6 +156,10 @@ Default: from [untergeek's using-templates-to-improve-elasticsearch-caching-with
 simpleJson Layout
 -----------------
 A simple message pass through of the loggingEvent.
+
+Resources
+=========
+Nodejs to host Kibana 3 and proxy the calls to elasticsearch: [https://github.com/hmalphettes/kibana-proxy](https://github.com/hmalphettes/kibana-proxy)
 
 License
 =======
