@@ -60,17 +60,23 @@ Usage: log4js configuration
     }
 ```
 
-Note: related to clearing the interval
---------------------------------------
+Note: clearing the timer used by log4js-elasticsearch
+-----------------------------------------------------
+By default the logs are posted every 30 seconds to elasticsearch or when more than 256 log events have been issued.
+
 Sending the logs by batches on a regular basis is a lot more performant
 than one by one.
 
-However a node process will not exit until all its has no more refernced timers.
-Since node-0.9 it is possible to have a 'soft' timer that is not referened.
-Before that it is required to close the log4js elasticsearch appenders:
+However a node process will not exit until it has no more referenced timers.
+Since node-0.9 it is possible to have a 'soft' timer that is not referenced.
+For node-0.8 and older it is required to close the log4js elasticsearch appenders:
+
 ```javascript
+// manually close the elasticsearch appenders:
 require('log4js-elasticsearch').flushAll(true);
 ```
+
+If the process is a server and it is simply meant to stop when killed then no need to do anything: process event listeners are added and a best attempt is made to send the pending logs before exiting. Tested on node-0.8 and node-0.10.
 
 Usage: custom
 -------------
