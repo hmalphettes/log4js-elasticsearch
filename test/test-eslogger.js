@@ -6,7 +6,7 @@ var log4jsElasticSearch = require(libpath + '/log4js-elasticsearch');
 describe('When configuring a logger posting events to elasticsearch', function() {
   var log4js = require('log4js');
   var mockElasticsearchClient = {
-    index: function(indexName, typeName, logObj, newLogId) {
+    index: function(indexName, typeName, logObj, newLogId, cb) {
       expect(indexName).to.match(/^logstash-/);
       expect(typeName).to.equal('nodejs');
       expect(newLogId).to.not.exist;
@@ -31,28 +31,17 @@ describe('When configuring a logger posting events to elasticsearch', function()
         currentLevelStr = null;
       }
       if (currentCallback) {
-        return { exec: function() {
-          currentCallback();
-          currentCallback = null;
-        } };
-      } else {
-        return { exec: function() {
-
-        }};
+        var callit = currentCallback;
+        currentCallback = null;
+        callit();
       }
+      cb();
     }, defineTemplate: function(templateName, template, done) {
       expect(templateName).to.equal('logstash-*');
       defineTemplateWasCalled = true;
-      if (typeof done === 'function') {
-        done();
-      }
-      return { exec: function(cb) {
-        cb();
-      }};
-    }, getTemplate: function(templateName) {
-      return { exec: function(cb) {
-        cb(null, '{}');
-      }};
+      done();
+    }, getTemplate: function(templateName, cb) {
+      cb(null, '{}');
     }
   };
   var currentMsg;
@@ -110,20 +99,15 @@ describe('When configuring an elasticsearch appender', function() {
   var currentMsg;
   var defineTemplateWasCalled = false;
   var mockElasticsearchClient = {
-    index: function(indexName, typeName, logObj) {
+    index: function(indexName, typeName, logObj, id, cb) {
       expect(logObj['@message']).to.equal(currentMsg);
       currentMsg = null;
-      return { exec: function() {
-      }};
-    }, defineTemplate: function() {
+      cb();
+    }, defineTemplate: function(templateName, template, cb) {
       defineTemplateWasCalled = true;
-      return { exec: function(cb) {
-        cb(null, 'ok');
-      }};
-    }, getTemplate: function(templateName) {
-      return { exec: function(cb) {
-        cb(null, '{}');
-      }};
+      cb(null, 'ok');
+    }, getTemplate: function(templateName, cb) {
+      cb(null, '{}');
     }
   };
   before(function() {
@@ -156,23 +140,18 @@ describe('When configuring an elasticsearch logstash appender layout', function(
   var currentMsg;
   var defineTemplateWasCalled = false;
   var mockElasticsearchClient = {
-    index: function(indexName, typeName, logObj) {
+    index: function(indexName, typeName, logObj, id, cb) {
       expect(logObj['@message']).to.equal(currentMsg);
       expect(logObj['@tags'][0]).to.equal('goodie');
       expect(logObj['@source_host']).to.equal('aspecialhost');
       expect(typeName).to.equal('customType');
       currentMsg = null;
-      return { exec: function() {
-      }};
-    }, defineTemplate: function() {
+      cb();
+    }, defineTemplate: function(templateName, template, cb) {
       defineTemplateWasCalled = true;
-      return { exec: function(cb) {
-        cb(null, 'something');
-      }};
-    }, getTemplate: function(templateName) {
-      return { exec: function(cb) {
-        cb(null, '{}');
-      }};
+      cb(null, 'something');
+    }, getTemplate: function(templateName, cb) {
+      cb(null, '{}');
     }
   };
   it('Must have configured the appender with static params', function() {
@@ -241,18 +220,15 @@ describe('When sending the logs in bulk', function() {
   var bulkWasCalled = 0;
   var expectedBulkcmdsSize;
   var mockElasticsearchClient = {
-    bulk: function(bulkCmds) {
+    bulk: function(bulkCmds, cb) {
       if (expectedBulkcmdsSize) {
         expect(bulkCmds.length).to.equal(expectedBulkcmdsSize);
         expectedBulkcmdsSize = null;
       }
       bulkWasCalled++;
-      return { exec: function() {
-      }};
-    }, getTemplate: function(templateName) {
-      return { exec: function(cb) {
-        cb(null, 'notempty');
-      }};
+      cb();
+    }, getTemplate: function(templateName, cb) {
+      cb(null, 'notempty');
     }
   };
   function reset(done) {

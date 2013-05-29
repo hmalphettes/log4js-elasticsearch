@@ -15,6 +15,7 @@ describe('When configuring a logger posting events to elasticsearch', function()
     var config = {
       typeName: 'log4js',
       buffersize: 1,
+      url: process.env.ES_URL,
       layout: {
         type: 'logstash'
       }
@@ -48,7 +49,7 @@ describe('When configuring an es logger', function() {
       "appenders": [
         {
           "type": "log4js-elasticsearch",
-          "url": "http://127.0.0.1:9200",
+          "url": process.env.ES_URL || 'http://127.0.0.1:9200',
           "forceDefineTemplate": true,
           "layout": {
             "type": "logstash",
@@ -87,6 +88,7 @@ describe.skip('When configuring a filtered es logger', function() {
           "level": "WARN",
           "appender": {
             "type": "log4js-elasticsearch",
+            "url": process.env.ES_URL,
             "layout": { 
               "type": "logstash" 
             } 
