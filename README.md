@@ -11,7 +11,7 @@ Installation
 
 You can install install log4js-elasticsearch via npm:
 
-    npm install git://github.com/hmalphettes/log4js-elasticsearch.git
+    npm install log4js-elasticsearch
 
 Usage: basic
 ------------
