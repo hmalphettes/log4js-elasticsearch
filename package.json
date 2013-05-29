@@ -29,7 +29,8 @@
     "mocha": "*",
     "istanbul": "*",
     "mocha-istanbul": "*",
-    "sandboxed-module": "*"
+    "sandboxed-module": "*",
+    "jshint": "*"
   },
   "optionalDependencies": {}
 }
