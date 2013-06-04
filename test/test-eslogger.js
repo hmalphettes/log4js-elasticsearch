@@ -139,6 +139,7 @@ describe('When configuring an elasticsearch logstash appender layout', function(
 
   var currentMsg;
   var defineTemplateWasCalled = false;
+  var expectedNumberOfShardsInTemplate = -1;
   var mockElasticsearchClient = {
     index: function(indexName, typeName, logObj, id, cb) {
       expect(logObj['@message']).to.equal(currentMsg);
@@ -149,12 +150,17 @@ describe('When configuring an elasticsearch logstash appender layout', function(
       cb();
     }, defineTemplate: function(templateName, template, cb) {
       defineTemplateWasCalled = true;
+      if (expectedNumberOfShardsInTemplate !== -1) {
+        expect(template.settings.number_of_shards).to.equal(expectedNumberOfShardsInTemplate);
+        expectedNumberOfShardsInTemplate = -1;
+      }
       cb(null, 'something');
     }, getTemplate: function(templateName, cb) {
       cb(null, '{}');
     }
   };
   it('Must have configured the appender with static params', function() {
+    expectedNumberOfShardsInTemplate = 1;
     log4js.configure({
       "appenders": [
         {
@@ -165,7 +171,8 @@ describe('When configuring an elasticsearch logstash appender layout', function(
           "layout": {
             "type": "logstash",
             "tags": [ "goodie" ],
-            "sourceHost": "aspecialhost"
+            "sourceHost": "aspecialhost",
+            "template": {"settings": { "number_of_shards": 1 }}
           }
         }
       ]
@@ -179,6 +186,7 @@ describe('When configuring an elasticsearch logstash appender layout', function(
   });
 
   it('Must have configured the appender with dynamic params', function() {
+    expectedNumberOfShardsInTemplate = 4;
     log4js.configure({
       "appenders": [
         {

@@ -84,8 +84,7 @@ Usage: custom
     var log4js = require('log4js');
     var uuid = require('node-uuid');
     log4js.configure({
-        "appenders": [
-            "appender": {
+        "appenders": [ {
                 "type": "log4js-elasticsearch",
                 "indexName": function(loggingEvent) {
                     return loggingEvent.categoryName;
@@ -113,6 +112,25 @@ Usage: custom
         }
     });
 
+Usage: connect logger
+---------------------
+```javascript
+    var log4js = require('log4js');
+    var logstashConnectFormatter = require('log4js-elasticsearch').logstashConnectFormatter;
+    log4js.configure({
+      "appenders": [
+        {
+          "type": "log4js-elasticsearch",
+          "esclient": mockElasticsearchClient,
+          "buffersize": 1,
+          "layout": { type: 'logstash' }
+        }
+      ]
+    });
+    var logger = log4js.getLogger('express');
+    var connectLogger = log4js.connectLogger(logger, { format: logstashConnectFormatter });
+    app.use(connectLogger); //where app is the express app.
+```
 
 Appender configuration parameters
 =================================
