@@ -1,6 +1,6 @@
 {
   "name": "log4js-elasticsearch",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "log4js appender for node that targets elasticsearch.\nCompatible with logstash's elasticsearch_http output; Viewable with Kibana.",
   "main": "lib/log4js-elasticsearch.js",
   "scripts": {
