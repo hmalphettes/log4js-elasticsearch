@@ -1,6 +1,6 @@
 {
   "name": "log4js-elasticsearch",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "log4js appender for node that targets elasticsearch.\nCompatible with logstash's elasticsearch_http output; Viewable with Kibana.",
   "main": "lib/log4js-elasticsearch.js",
   "scripts": {
@@ -21,8 +21,7 @@
     "email": "hmalphettes@gmail.com"
   },
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "log4js": "*",
     "chai": "*",
