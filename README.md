@@ -6,6 +6,10 @@ log4js-elasticsearch is a log4js log appender to push log messages into [elastic
 
 The logs produced are compatible with [logstash's elasticsearch_http output](logstash.net/docs/1.1.12/outputs/elasticsearch_http).
 
+AWS Managed Elasticsearch support
+---------------------------------
+Supported here: https://github.com/ironSource/log4js-elasticsearch-aws
+
 Installation
 ------------
 
