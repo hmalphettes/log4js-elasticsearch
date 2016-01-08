@@ -203,10 +203,6 @@ simpleJson Layout
 -----------------
 A simple message pass through of the loggingEvent.
 
-Resources
-=========
-Nodejs to host Kibana 3 and proxy the calls to elasticsearch: [https://github.com/hmalphettes/kibana-proxy](https://github.com/hmalphettes/kibana-proxy)
-
 License
 =======
 MIT
